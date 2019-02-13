@@ -1,1 +1,1 @@
-# Netty IM
+# Netty Instant Messaging

@@ -1,0 +1,4 @@
+rootProject.name = 'netty-im'
+include 'im-core'
+include 'im-client'
+include 'im-server'

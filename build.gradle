@@ -1,0 +1,62 @@
+buildscript {
+    repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        mavenCentral()
+    }
+}
+ext {
+    fastjsonVersion = "1.2.51"
+    log4jVersion = "2.11.1"
+    lombokVersion = "1.18.4"
+    nettyVersion = "4.1.33.Final"
+    slf4jVersion = "1.7.25"
+}
+
+configure(allprojects) { project ->
+    group 'com.im'
+    version '1.0-SNAPSHOT'
+
+    apply plugin: "java"
+
+    compileJava {
+        sourceCompatibility = 11
+        targetCompatibility = 11
+        options.encoding = "UTF-8"
+    }
+
+    compileTestJava {
+        sourceCompatibility = 11
+        targetCompatibility = 11
+        options.encoding = "UTF-8"
+        options.compilerArgs += "-parameters"
+    }
+
+    repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        mavenCentral()
+    }
+
+    dependencies {
+        compile("org.projectlombok:lombok:${lombokVersion}")
+        compile("io.netty:netty-all:${nettyVersion}")
+        compile("com.alibaba:fastjson:${fastjsonVersion}")
+        compile("org.apache.logging.log4j:log4j-core:${log4jVersion}")
+        compile("org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}")
+        compile("org.apache.logging.log4j:log4j-jul:${log4jVersion}")
+        testCompile("junit:junit:4.12")
+    }
+
+}
+
+configure(subprojects) { subproject ->
+    jar {
+        manifest.attributes["Implementation-Title"] = subproject.name
+        manifest.attributes["Implementation-Version"] = subproject.version
+        manifest.attributes["Created-By"] =
+                "${System.getProperty("java.version")} (${System.getProperty("java.specification.vendor")})"
+    }
+}
+
+configure(rootProject) {
+    description 'Netty Instant Messaging'
+}

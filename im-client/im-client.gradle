@@ -1,0 +1,4 @@
+description 'Instant Messaging Client'
+dependencies {
+    compile(project(":im-core"))
+}
