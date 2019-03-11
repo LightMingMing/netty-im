@@ -9,6 +9,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 
@@ -45,8 +47,11 @@ public class HttpServerBootstrap {
 
     protected static class SimpleHttpServerHandler extends SimpleChannelInboundHandlerLifeCycle<HttpObject> {
 
+        private final Logger log = LoggerFactory.getLogger(this.getClass());
+
         @Override
         protected void messageReceived(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
+            log.info("the message type is '" + msg.getClass() + "'");
             if (msg instanceof HttpRequest) {
                 ByteBuf content = ctx.alloc().buffer();
                 content.writeBytes("Hello, World.".getBytes(StandardCharsets.UTF_8));
