@@ -2,13 +2,13 @@ package netty.basics.demo;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 
@@ -30,38 +30,32 @@ public class HttpServerBootstrap {
         }
     }
 
-    protected static class BossChannelHandler extends ChannelInboundHandlerAdapter {
-
-        private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-        @Override
-        public void channelActive(ChannelHandlerContext ctx) throws Exception {
-            log.info("channel 通道准备就绪 channelActive(ctx)");
-            super.channelActive(ctx);
-        }
+    protected static class BossChannelHandler extends ChannelInboundHandlerAdapterLifeCycle {
     }
 
-    protected static class WorkerChannelInitializer extends ChannelInitializer<NioSocketChannel> {
+    protected static class WorkerChannelInitializer extends ChannelInitializerLifeCycle<NioSocketChannel> {
 
         @Override
-        protected void initChannel(NioSocketChannel ch) throws Exception {
+        protected void doInitChannel(NioSocketChannel ch) throws Exception {
             ChannelPipeline pipeline = ch.pipeline();
             pipeline.addLast(new HttpServerCodec());
             pipeline.addLast(new SimpleHttpServerHandler());
         }
     }
 
-    protected static class SimpleHttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
+    protected static class SimpleHttpServerHandler extends SimpleChannelInboundHandlerLifeCycle<HttpObject> {
 
         @Override
-        protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
-            ByteBuf content = ctx.alloc().buffer();
-            content.writeBytes("Hello, World.".getBytes(StandardCharsets.UTF_8));
+        protected void messageReceived(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
+            if (msg instanceof HttpRequest) {
+                ByteBuf content = ctx.alloc().buffer();
+                content.writeBytes("Hello, World.".getBytes(StandardCharsets.UTF_8));
 
-            FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, content);
-            response.headers().add(HttpHeaderNames.CONTENT_TYPE, "text/plain");
-            response.headers().add(HttpHeaderNames.CONTENT_LENGTH, content.readableBytes());
-            ctx.writeAndFlush(response);
+                FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, content);
+                response.headers().add(HttpHeaderNames.CONTENT_TYPE, "text/plain");
+                response.headers().add(HttpHeaderNames.CONTENT_LENGTH, content.readableBytes());
+                ctx.writeAndFlush(response);
+            }
         }
     }
 }
