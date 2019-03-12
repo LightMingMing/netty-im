@@ -17,6 +17,12 @@ public abstract class SimpleChannelInboundHandlerLifeCycle<I> extends SimpleChan
     }
 
     @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        log.info("chanel 通道注册[-> EventLoopGroup]");
+        super.channelRegistered(ctx);
+    }
+
+    @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.info("channel 通道连接 channelActive(ctx)");
         super.channelActive(ctx);
