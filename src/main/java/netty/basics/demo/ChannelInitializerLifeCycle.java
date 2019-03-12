@@ -19,7 +19,7 @@ public abstract class ChannelInitializerLifeCycle<C extends Channel> extends Cha
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.info("channel 通道打开 channelActive(ctx)");
+        log.info("channel 通道连接 channelActive(ctx)");
         super.channelActive(ctx);
     }
 
@@ -49,7 +49,7 @@ public abstract class ChannelInitializerLifeCycle<C extends Channel> extends Cha
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        log.info("channel 通道注销[<- EventLoopGroup] channelUnregistered(ctx)");
+        log.info("channel 取消通道注册[<- EventLoopGroup] channelUnregistered(ctx)");
         super.channelUnregistered(ctx);
     }
 
