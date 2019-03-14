@@ -1,4 +1,4 @@
-package netty.basics.demo;
+package netty.basics.http;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;

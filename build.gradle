@@ -67,6 +67,6 @@ configure(rootProject) {
         manifest.attributes["Implementation-Version"] = rootProject.version
         manifest.attributes["Created-By"] =
                 "${System.getProperty("java.version")} (${System.getProperty("java.specification.vendor")})"
-        manifest.attributes["Main-class"] = "netty.basics.demo.HttpServerBootstrap"
+        manifest.attributes["Main-class"] = "netty.basics.http.HttpServerBootstrap"
     }
 }

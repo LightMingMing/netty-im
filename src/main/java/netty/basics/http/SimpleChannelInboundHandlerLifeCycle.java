@@ -1,32 +1,30 @@
-package netty.basics.demo;
+package netty.basics.http;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
+import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class ChannelInitializerLifeCycle<C extends Channel> extends ChannelInitializer<C> {
+public abstract class SimpleChannelInboundHandlerLifeCycle<I> extends SimpleChannelInboundHandler<I> {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        log.info("channelHandler 添加通道处理器 handlerAdded(ctx) start");
+        log.info("channelHandler 添加通道处理器 handlerAdded(ctx)");
         super.handlerAdded(ctx);
-        log.info("channelHandler 添加通道处理器 handlerAdded(ctx) end");
+    }
+
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        log.info("chanel 通道注册[-> EventLoopGroup]");
+        super.channelRegistered(ctx);
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.info("channel 通道连接 channelActive(ctx)");
         super.channelActive(ctx);
-    }
-
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        log.info("channel 通道读取数据 channelRead(ctx, msg)");
-        super.channelRead(ctx, msg);
     }
 
     @Override
@@ -60,11 +58,11 @@ public abstract class ChannelInitializerLifeCycle<C extends Channel> extends Cha
     }
 
     @Override
-    protected void initChannel(C channel) throws Exception {
-        log.info("channel 通道初始化 initChannel(ch) start");
-        doInitChannel(channel);
-        log.info("channel 通道初始化 initChannel(ch) end");
+    protected void channelRead0(ChannelHandlerContext ctx, I msg) throws Exception {
+        log.info("channel 通道读取 channelRead0(ctx, msg)");
+        messageReceived(ctx, msg);
     }
 
-    protected abstract void doInitChannel(C channel) throws Exception;
+    protected abstract void messageReceived(ChannelHandlerContext ctx, I msg) throws Exception;
+
 }
