@@ -238,3 +238,16 @@ public abstract class ChannelInitializer<C extends Channel> extends ChannelInbou
     }
 }
 ```
+
+lsof -i:8080
+
+**lsof命令**
+```
+➜  ~ lsof -i:8080
+COMMAND PID     USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+java    938 mingming  165u  IPv6 0x221afd4ccaad178f      0t0  TCP *:http-alt (LISTEN)
+java    938 mingming  166u  IPv6 0x221afd4ccaad008f      0t0  TCP localhost:http-alt->localhost:49987 (ESTABLISHED)
+java    940 mingming   93u  IPv6 0x221afd4ccaacf50f      0t0  TCP localhost:49987->localhost:http-alt (ESTABLISHED)
+```
+
+#### 编码器、解码器
