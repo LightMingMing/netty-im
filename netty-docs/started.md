@@ -239,8 +239,6 @@ public abstract class ChannelInitializer<C extends Channel> extends ChannelInbou
 }
 ```
 
-lsof -i:8080
-
 **lsof命令**
 ```
 ➜  ~ lsof -i:8080
@@ -248,6 +246,97 @@ COMMAND PID     USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
 java    938 mingming  165u  IPv6 0x221afd4ccaad178f      0t0  TCP *:http-alt (LISTEN)
 java    938 mingming  166u  IPv6 0x221afd4ccaad008f      0t0  TCP localhost:http-alt->localhost:49987 (ESTABLISHED)
 java    940 mingming   93u  IPv6 0x221afd4ccaacf50f      0t0  TCP localhost:49987->localhost:http-alt (ESTABLISHED)
+```
+### 通道
+`Channel`用于客户端与服务端的交互, 相关类图如下
+![通道类图](png/Channel.png)
+
+```java
+package io.netty.channel;
+public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparable<Channel> {
+    
+    // 通道的全局唯一的标识符
+    ChannelId id();
+
+    // 返回通道注册的事件轮询组
+    EventLoop eventLoop();
+
+    Channel parent();
+
+    ChannelConfig config();
+
+    boolean isOpen();
+
+    boolean isRegistered();
+
+    boolean isActive();
+}
+```
+对于`Socket`有两个重要的通道`SocketChannel`, `NioSocketChannel`
+**SocketChannel**
+```java
+package io.netty.channel.socket;
+
+import io.netty.channel.Channel;
+
+import java.net.InetSocketAddress;
+
+public interface SocketChannel extends DuplexChannel {
+    @Override
+    ServerSocketChannel parent();
+    @Override
+    SocketChannelConfig config();
+    @Override
+    InetSocketAddress localAddress();
+    @Override
+    InetSocketAddress remoteAddress();
+}
+```
+
+**ServerSocketChannel**
+```java
+package io.netty.channel.socket;
+
+import io.netty.channel.ServerChannel;
+
+import java.net.InetSocketAddress;
+
+public interface ServerSocketChannel extends ServerChannel {
+    @Override
+    ServerSocketChannelConfig config();
+    @Override
+    InetSocketAddress localAddress();
+    @Override
+    InetSocketAddress remoteAddress();
+}
+```
+
+**通道组**  
+`ChannelGroup`一组通道的集合
+```java
+package io.netty.channel.group;
+public interface ChannelGroup extends Set<Channel>, Comparable<ChannelGroup> {
+
+    String name();
+
+    Channel find(ChannelId id);
+
+    ChannelGroupFuture write(Object message);
+
+    ChannelGroupFuture write(Object message, ChannelMatcher matcher);
+    
+    ChannelGroupFuture write(Object message, ChannelMatcher matcher, boolean voidPromise);
+    
+    ChannelGroup flush(ChannelMatcher matcher);
+        
+    ChannelGroupFuture writeAndFlush(Object message);
+
+    ChannelGroupFuture writeAndFlush(Object message, ChannelMatcher matcher);
+    
+    ChannelGroupFuture writeAndFlush(Object message, ChannelMatcher matcher, boolean voidPromise);
+    
+    // ....
+}
 ```
 
 #### 编码器、解码器
