@@ -340,3 +340,52 @@ public interface ChannelGroup extends Set<Channel>, Comparable<ChannelGroup> {
 ```
 
 #### 编码器、解码器
+
+### 心跳检测
+空闲检测处理器 `IdleStateHandler`  
+服务端
+```java
+public class ServerChannelInitializer extends ChannelInitializer<NioSocketChannel> {
+    @Override
+    protected void initChannel(NioSocketChannel ch) throws Exception {
+        ChannelPipeline pipeline = ch.pipeline();
+        pipeline.addLast(new IdleStateHandler(5, 10, 15));
+        pipeline.addLast(new HeartbeatDetectHandler());
+    }
+}
+```
+```java
+public class HeartbeatDetectHandler extends ChannelInboundHandlerAdapter {
+    
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            IdleState idleState = ((IdleStateEvent) evt).state();
+            log.info("检测到通道[" + ctx.channel().remoteAddress() + "] 空闲类型 : " + idleState.name());
+            if (idleState.equals(IdleState.ALL_IDLE))
+                ctx.channel().close();
+        }
+    }
+}
+```
+**IdleState**枚举类型
+```java
+package io.netty.handler.timeout;
+
+import io.netty.channel.Channel;
+
+public enum IdleState {
+    /**
+     * No data was received for a while.
+     */
+    READER_IDLE,
+    /**
+     * No data was sent for a while.
+     */
+    WRITER_IDLE,
+    /**
+     * No data was either received or sent for a while.
+     */
+    ALL_IDLE
+}
+```
