@@ -389,3 +389,64 @@ public enum IdleState {
     ALL_IDLE
 }
 ```
+### Web Socket的支持
+
+Http特性
+1. 无状态的
+2. 基于请求、进行响应的
+3. Http1.1 keep-alive 持续连接--> 连接重用
+4. Http2 长连接
+
+如果在浏览器上实现聊天不太现实，需要服务端主动向客户端推送消息. 一般采用轮询的方法，但是数据的及时性不高、每次都是Http请求，会有很多的头信息，容量甚至可能超过内容本身。  
+WebSocket 能够实现真正意义上的长连接，连接一旦建立，双方就是一个对等的关系，能够双向的数据通信。真正实现服务端的push，同时只需发送数据本身，不需要发送头信息，有效的减少网络带宽。
+
+
+`new HttpServerCodec()`
+`new ChunkedWriteHandler()`
+`new HttpObjectAggregator(8192)`
+`new WebSocketServerProtocolHandler(uri)`
+
+```
+channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) {
+    msg.text();
+    ctx.channel().writeAndFlush(new TextWebSocketFrame("Hello"));
+}
+```
+6种 WebSocketFrame 帧
+1. BinaryWebSocketFrame 二进制
+2. CloseWebSocketFrame 关闭指令
+3. ContinueWebSocketFrame 数据未发送完, 还会有
+4. PingWebSocketFrame ping指令
+5. PongWebSocketFrame ping指令的响应pong
+6. TextWebSocketFrame 帧中包含的文本内容  
+类图如下
+![WebSocketFrame](png/WebSocketFrame.png)
+
+头信息
+```
+General
+Request URL: ws://localhost:8080/websocket
+Request Method: GET
+Status Code: 101 Switching Protocols
+
+Response Headers
+connection: upgrade
+sec-websocket-accept: v9HwMmcvOtDPeUnBVxs9cbu8s2o=
+upgrade: websocket
+
+Request Headers
+Accept-Encoding: gzip, deflate, br
+Accept-Language: zh-CN,zh;q=0.9
+Cache-Control: no-cache
+Connection: Upgrade
+Host: localhost:8080
+Origin: http://localhost:63342
+Pragma: no-cache
+Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
+Sec-WebSocket-Key: XlFj4lrfCIw9C8J9R2jZeg==
+Sec-WebSocket-Version: 13
+Upgrade: websocket
+```
+**Status Code: 101 Switching Protocols**  
+**Connection: Upgrade**  
+**Upgrade: websocket**  

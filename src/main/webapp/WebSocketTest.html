@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocketTest</title>
+    <script type="text/javascript">
+        var socket;
+        if (window.WebSocket) {
+            socket = new WebSocket("ws://localhost:8080/websocket");
+            socket.onmessage = function (ev) {
+                var receivedMessage = document.getElementById("receivedMessage");
+                receivedMessage.value = receivedMessage.value + "\n" + event.data;
+            };
+            socket.onopen = function (ev) {
+                var receivedMessage = document.getElementById("receivedMessage");
+                receivedMessage.value = '连接打开'
+            };
+            socket.onclose = function (ev) {
+                var receivedMessage = document.getElementById("receivedMessage");
+                receivedMessage.value = receivedMessage.value + '\n连接关闭'
+            }
+        } else {
+            alert('浏览器不支持WebSocket')
+        }
+
+        function messageSend(message) {
+            if (!window.WebSocket) return;
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(message);
+            }
+
+        }
+    </script>
+</head>
+<body>
+<h1>WebSocket Client</h1>
+<form onsubmit="return false;">
+    <textarea id="message" name="message" style="width: 400px;height: 300px;"></textarea>
+    <input type="button" value="发送" onclick="messageSend(document.getElementById('message').value)"><br>
+    <textarea id="receivedMessage" style="width: 400px;height: 300px;"></textarea>
+    <input type="button" onclick="document.getElementById('receivedMessage').value=''" value="清空">
+</form>
+</body>
+</html>
