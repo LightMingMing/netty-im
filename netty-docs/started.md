@@ -247,6 +247,12 @@ java    938 mingming  165u  IPv6 0x221afd4ccaad178f      0t0  TCP *:http-alt (LI
 java    938 mingming  166u  IPv6 0x221afd4ccaad008f      0t0  TCP localhost:http-alt->localhost:49987 (ESTABLISHED)
 java    940 mingming   93u  IPv6 0x221afd4ccaacf50f      0t0  TCP localhost:49987->localhost:http-alt (ESTABLISHED)
 ```
+**nc命令**
+```
+➜  ~ nc localhost 8080
+1234567890y
+1234567890y
+```
 ### 通道
 `Channel`用于客户端与服务端的交互, 相关类图如下
 ![通道类图](png/Channel.png)
