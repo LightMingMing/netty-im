@@ -51,6 +51,7 @@ public class SocketChannelHandler implements Runnable {
         logger.info("read {} {} bytes ", socketChannel.getRemoteAddress(), readBytes);
         if (readBytes == -1) {
             selectionKey.cancel();
+            socketChannel.close();
             return;
         }
         data.flip();

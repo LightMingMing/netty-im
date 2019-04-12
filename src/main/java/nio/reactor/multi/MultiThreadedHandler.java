@@ -25,11 +25,13 @@ public class MultiThreadedHandler implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final SocketChannel socketChannel;
     private final SelectionKey selectionKey;
+    private final Selector selector;
     private final ByteBuffer input = ByteBuffer.allocateDirect(1024);
     private final ByteBuffer output = ByteBuffer.allocateDirect(1024);
     private int state = READING;
 
     public MultiThreadedHandler(Selector selector, SocketChannel socketChannel) throws IOException {
+        this.selector = selector;
         this.socketChannel = socketChannel;
         this.socketChannel.configureBlocking(false);
         this.selectionKey = socketChannel.register(selector, SelectionKey.OP_READ, this);
@@ -54,6 +56,7 @@ public class MultiThreadedHandler implements Runnable {
         logger.info("read {} {} bytes ", socketChannel.getRemoteAddress(), readBytes);
         if (readBytes == -1) {
             this.selectionKey.cancel();
+            this.socketChannel.close();
             return;
         }
         if (isInputComplete()) {
@@ -68,7 +71,10 @@ public class MultiThreadedHandler implements Runnable {
         input.get(inputBytes);
         input.clear();
         try {
-            logger.info("received message '{}' from '{}'", new String(inputBytes, StandardCharsets.UTF_8), socketChannel.getRemoteAddress());
+            String receivedMessage = new String(inputBytes, StandardCharsets.UTF_8);
+            if (receivedMessage.endsWith("\n"))
+                receivedMessage = receivedMessage.substring(0, receivedMessage.length() - 1);
+            logger.info("received message '{}' from '{}'", receivedMessage, socketChannel.getRemoteAddress());
         } catch (IOException e) {
             logger.warn(e.getMessage());
         }
@@ -80,6 +86,7 @@ public class MultiThreadedHandler implements Runnable {
         process();
         state = WRITING;
         selectionKey.interestOps(SelectionKey.OP_WRITE);
+        selector.wakeup();
     }
 
     private void write() throws IOException {

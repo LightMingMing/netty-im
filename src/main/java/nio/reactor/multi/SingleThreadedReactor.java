@@ -41,9 +41,8 @@ public class SingleThreadedReactor implements Runnable {
             logger.info("start...");
             // Dispatch Loop
             while (!Thread.interrupted()) {
-//                logger.info("select....");
-//                logger.info("keys number: " + selector.select(this::dispatch, 100));
-                selector.select(this::dispatch, 100);
+                // selector.select(this::dispatch, 100);
+                logger.info("keys number:" + selector.select(this::dispatch));
             }
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
