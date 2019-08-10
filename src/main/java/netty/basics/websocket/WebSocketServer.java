@@ -13,7 +13,7 @@ import io.netty.handler.stream.ChunkedWriteHandler;
 public class WebSocketServer {
 
     public static void main(String[] args) throws InterruptedException {
-        EventLoopGroup boss = new NioEventLoopGroup();
+        EventLoopGroup boss = new NioEventLoopGroup(1);
         EventLoopGroup worker = new NioEventLoopGroup();
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();

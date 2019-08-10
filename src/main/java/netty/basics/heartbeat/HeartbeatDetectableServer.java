@@ -9,7 +9,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 public class HeartbeatDetectableServer {
     public static void main(String[] args) throws InterruptedException {
-        EventLoopGroup boss = new NioEventLoopGroup();
+        EventLoopGroup boss = new NioEventLoopGroup(1);
         EventLoopGroup worker = new NioEventLoopGroup();
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();

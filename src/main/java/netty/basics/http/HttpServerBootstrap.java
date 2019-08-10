@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 public class HttpServerBootstrap {
 
     public static void main(String[] args) throws InterruptedException {
-        NioEventLoopGroup boss = new NioEventLoopGroup();
+        NioEventLoopGroup boss = new NioEventLoopGroup(1);
         NioEventLoopGroup worker = new NioEventLoopGroup();
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
